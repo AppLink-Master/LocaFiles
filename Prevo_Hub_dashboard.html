@@ -164,7 +164,7 @@ tbody td{padding:11px 16px;vertical-align:middle;}
     <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">SECRET KEY</label>
     <input id="setupSecret" type="text" placeholder="prevo2025xK9mQ" value="prevo2025xK9mQ"
       style="width:100%;padding:10px 14px;border:1.5px solid #e1e4ea;border-radius:8px;font-size:13px;font-family:monospace;outline:none;margin-bottom:24px;">
-    <button onclick="saveSetup()"
+    <button id="setupConnectBtn"
       style="width:100%;background:#3b82f6;color:#fff;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">
       Connect to Hub
     </button>
@@ -303,6 +303,11 @@ tbody td{padding:11px 16px;vertical-align:middle;}
   </div>
 </div>
 <script>
+// تأجيل setup حتى يتحمل DOM
+document.addEventListener('DOMContentLoaded', function(){
+  var btn = document.getElementById('setupConnectBtn');
+  if(btn) btn.addEventListener('click', saveSetup);
+});
 // Setup functions
 function saveSetup(){
   var url = document.getElementById('setupUrl').value.trim();
