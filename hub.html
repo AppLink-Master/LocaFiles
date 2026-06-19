@@ -550,10 +550,32 @@ function renderScripts() {
   scripts.forEach(function(s) {
     var icon = s.status === 'alive' ? '🟢' : s.status === 'dead' ? '🔴' : '⚪';
     var beat = s.lastHeartbeat ? timeSince(new Date(s.lastHeartbeat)) : 'Never';
+
+    // تحديد حالة الحملة
+    var campStatus = '', campColor = '', campBg = '';
+    if (s.status !== 'alive') {
+      campStatus = 'Stopped'; campColor = '#991b1b'; campBg = '#fee2e2';
+    } else if (s.activeCount === 0) {
+      campStatus = 'No Accounts'; campColor = '#92400e'; campBg = '#fef3c7';
+    } else {
+      // alive + has active accounts = Running
+      campStatus = 'Running'; campColor = '#065f46'; campBg = '#d1fae5';
+    }
+    // إذا آخر heartbeat أكثر من 8 دقائق = Limit Reached أو Stopped
+    if (s.status === 'alive' && s.lastHeartbeat) {
+      var minsSince = (new Date() - new Date(s.lastHeartbeat)) / 60000;
+      if (minsSince > 8) {
+        campStatus = 'Idle / Limit'; campColor = '#1e40af'; campBg = '#dbeafe';
+      }
+    }
+
     var d = document.createElement('div');
     d.className = 'sc ' + (s.status || 'unknown');
     d.innerHTML =
       '<div class="sc-id"><span class="' + chipClass(s.scriptId) + '">' + icon + ' ' + s.scriptId + '</span></div>' +
+      '<div style="margin-bottom:8px">' +
+        '<span style="display:inline-block;font-size:11px;font-weight:700;padding:2px 10px;border-radius:12px;font-family:var(--mono);background:' + campBg + ';color:' + campColor + '">' + campStatus + '</span>' +
+      '</div>' +
       '<div class="sc-meta">' +
         '<div><div class="sm-lbl">Active</div><div class="sm-val" style="color:var(--green)">' + (s.activeCount||0) + '</div></div>' +
         '<div><div class="sm-lbl">Today</div><div class="sm-val" style="color:var(--blue)">' + (s.todaySent||0) + '</div></div>' +
