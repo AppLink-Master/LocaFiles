@@ -721,10 +721,23 @@ function saveConfig() {
     var badge = document.getElementById('cfg-badge');
     badge.className = 'badge bg'; badge.textContent = '✓ saved'; badge.style.display = '';
     setTimeout(function(){ badge.style.display = 'none'; }, 3000);
-    msg.textContent = 'Config saved — applies on next campaign start';
-    setTimeout(function(){ msg.textContent = ''; }, 5000);
+    msg.textContent = 'Config saved — applying to all scripts...';
     toast('Config saved','ok');
-    addLog('ok','Config saved');
+    addLog('ok','Config saved — broadcasting to scripts');
+
+    // تطبيق فوري على كل السكريبتات
+    var target = document.getElementById('bc-target') ?
+                 document.getElementById('bc-target').value : 'all';
+    callHub({action: 'broadcast_update_config', targetScriptId: target}, function(e2, r2) {
+      if (e2) {
+        msg.textContent = 'Config saved but broadcast failed: ' + e2.message;
+        setTimeout(function(){ msg.textContent = ''; }, 5000);
+      } else {
+        msg.textContent = 'Config applied: ' + (r2.executed||0) + ' executed, ' + (r2.pending||0) + ' pending';
+        setTimeout(function(){ msg.textContent = ''; }, 5000);
+        addLog('ok','Config broadcast: executed=' + (r2.executed||0) + ' pending=' + (r2.pending||0));
+      }
+    });
   });
 }
 
