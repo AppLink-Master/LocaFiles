@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevo Control Hub</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+:root {
+  --bg:#f0f2f5; --surface:#fff; --card:#f8f9fb; --border:#e1e4ea;
+  --green:#10b981; --green-dim:#d1fae5;
+  --red:#ef4444;   --red-dim:#fee2e2;
+  --amber:#f59e0b; --amber-dim:#fef3c7;
+  --blue:#3b82f6;  --blue-dim:#dbeafe;
+  --purple:#8b5cf6;
+  --text:#111827;  --text2:#374151; --muted:#9ca3af;
+  --mono:'IBM Plex Mono',monospace; --sans:'Inter',sans-serif;
+  --shadow:0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:0 4px 6px rgba(0,0,0,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;}
+.brand-icon{width:32px;height:32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 2px var(--green-dim);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.last-upd{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.btn{border-radius:7px;padding:7px 16px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent;}
+.btn-outline{background:var(--surface);color:var(--text2);border-color:var(--border);}
+.btn-outline:hover{background:var(--bg);}
+.btn-outline:disabled{opacity:.5;cursor:not-allowed;}
+.main{padding:24px;max-width:1440px;margin:0 auto;}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:14px;}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.si-green{background:var(--green-dim)}.si-red{background:var(--red-dim)}.si-blue{background:var(--blue-dim)}.si-amber{background:var(--amber-dim)}.si-purple{background:#ede9fe}
+.stat-label{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:4px;}
+.stat-value{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1;}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;box-shadow:var(--shadow);overflow:hidden;}
+.sec-hdr{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sec-title{font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;}
+.badge{font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;font-family:var(--mono);}
+.badge-red{background:var(--red-dim);color:var(--red);}.badge-green{background:var(--green-dim);color:var(--green);}.badge-muted{background:var(--bg);color:var(--muted);border:1px solid var(--border);}.badge-blue{background:var(--blue-dim);color:var(--blue);}
+.scripts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;padding:16px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;transition:box-shadow .15s;}
+.sc:hover{box-shadow:var(--shadow-md);}.sc.alive{border-top:3px solid var(--green)}.sc.dead{border-top:3px solid var(--red)}.sc.unknown{border-top:3px solid var(--muted)}
+.sc-id{font-family:var(--mono);font-size:13px;font-weight:600;margin-bottom:10px;}
+.sc-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sm-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;}
+.sm-val{font-family:var(--mono);font-size:14px;font-weight:600;}
+.sc-beat{font-size:10px;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border);}
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 20px;overflow-x:auto;}
+.tab{padding:11px 16px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.tab:hover{color:var(--text)}.tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600;}
+.filter-bar{padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--card);}
+.filter-bar input,.filter-bar select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:7px;font-family:var(--sans);font-size:13px;outline:none;}
+.filter-bar input{width:220px;}.filter-bar input:focus,.filter-bar select:focus{border-color:var(--blue);}
+.filter-count{font-size:12px;color:var(--muted);margin-left:auto;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{background:var(--card);padding:10px 16px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:hover{background:var(--card);}tbody tr.row-susp{background:#fff5f5;}tbody tr.row-susp:hover{background:#fee2e2;}
+tbody td{padding:11px 16px;vertical-align:middle;}
+.email-cell{font-family:var(--mono);font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2);}
+.num-cell{font-family:var(--mono);font-size:13px;color:var(--text2);}
+.error-cell{font-family:var(--mono);font-size:11px;color:var(--red);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chip{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;letter-spacing:.3px;}
+.chip-c0{background:#dbeafe;color:#1d4ed8;}.chip-c1{background:#d1fae5;color:#065f46;}.chip-c2{background:#fce7f3;color:#9d174d;}.chip-c3{background:#fef3c7;color:#92400e;}.chip-c4{background:#ede9fe;color:#5b21b6;}.chip-c5{background:#fee2e2;color:#991b1b;}.chip-c6{background:#ccfbf1;color:#134e4a;}.chip-c7{background:#ffedd5;color:#7c2d12;}.chip-c8{background:#e0e7ff;color:#3730a3;}.chip-c9{background:#fdf4ff;color:#86198f;}.chip-c10{background:#f0fdf4;color:#14532d;}.chip-c11{background:#fff7ed;color:#7c3aed;}
+.sent-today-wrap{display:flex;flex-direction:column;gap:2px;}
+.sent-today-main{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text2);}
+.sent-yest{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:1px;}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--mono);white-space:nowrap;}
+.dot2{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.pill-active{background:var(--green-dim);color:var(--green);}.pill-active .dot2{background:var(--green);animation:pulse 2s infinite;}
+.pill-susp{background:var(--red-dim);color:var(--red);}.pill-susp .dot2{background:var(--red);}
+.pill-warm{background:var(--amber-dim);color:var(--amber);}.pill-warm .dot2{background:var(--amber);animation:pulse 2s infinite;}
+.btn-react{background:var(--green-dim);color:var(--green);border:1px solid #6ee7b7;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-family:var(--sans);font-weight:600;transition:all .15s;white-space:nowrap;}
+.btn-react:hover{background:var(--green);color:#fff;}.btn-react:disabled{opacity:.4;cursor:not-allowed;}
+.btn-react-all{background:var(--red-dim);color:var(--red);border:1px solid #fca5a5;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:12px;font-family:var(--sans);font-weight:600;transition:all .15s;}
+.btn-react-all:hover{background:var(--red);color:#fff;}
+.state-box{text-align:center;padding:56px 20px;color:var(--muted);}
+.state-icon{font-size:36px;margin-bottom:10px;}.state-box p{font-size:14px;}.state-box .hint{font-size:12px;margin-top:4px;opacity:.7;}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.log-area{padding:14px 18px;font-family:var(--mono);font-size:12px;line-height:1.8;max-height:240px;overflow-y:auto;background:var(--card);}
+.log-line{display:flex;gap:12px;}.log-time{color:var(--muted);white-space:nowrap;}
+.log-ok{color:var(--green)}.log-err{color:var(--red)}.log-info{color:var(--blue)}.log-warn{color:var(--amber)}
+.toast-c{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;}
+.toast{padding:11px 18px;border-radius:9px;font-size:13px;font-weight:600;animation:slideIn .25s ease;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:1px solid transparent;}
+.toast-success{background:var(--green-dim);color:#065f46;border-color:#6ee7b7;}.toast-error{background:var(--red-dim);color:#991b1b;border-color:#fca5a5;}.toast-info{background:var(--blue-dim);color:#1e40af;border-color:#93c5fd;}
+@keyframes slideIn{from{transform:translateX(16px);opacity:0}to{transform:none;opacity:1}}
+.broadcast-wrap{padding:16px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.bc-select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:600;outline:none;min-width:180px;cursor:pointer;}
+.bc-select:focus{border-color:var(--blue);}
+.bc-divider{width:1px;height:32px;background:var(--border);margin:0 4px;}
+.btn-bc{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid transparent;transition:all .15s;font-family:var(--sans);display:inline-flex;align-items:center;gap:7px;}
+.btn-bc:disabled{opacity:.4;cursor:not-allowed;}
+.btn-bc-start{background:var(--green-dim);color:#065f46;border-color:#6ee7b7;}
+.btn-bc-start:hover:not(:disabled){background:var(--green);color:#fff;border-color:var(--green);}
+.btn-bc-stop{background:var(--red-dim);color:#991b1b;border-color:#fca5a5;}
+.btn-bc-stop:hover:not(:disabled){background:var(--red);color:#fff;border-color:var(--red);}
+.btn-bc-reset{background:var(--amber-dim);color:#92400e;border-color:#fcd34d;}
+.btn-bc-reset:hover:not(:disabled){background:var(--amber);color:#fff;border-color:var(--amber);}
+.btn-bc-links{background:var(--blue-dim);color:#1e40af;border-color:#93c5fd;}
+.btn-bc-links:hover:not(:disabled){background:var(--blue);color:#fff;border-color:var(--blue);}
+.btn-bc-template{background:#f5f3ff;color:#5b21b6;border-color:#c4b5fd;}
+.btn-bc-template:hover:not(:disabled){background:#8b5cf6;color:#fff;border-color:#8b5cf6;}
+.bc-status{font-size:12px;font-family:var(--mono);color:var(--muted);margin-left:4px;min-width:180px;}
+.brp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;animation:fadeIn .2s ease;}
+.brp-panel{position:fixed;top:0;right:0;height:100%;width:380px;max-width:95vw;background:var(--surface);box-shadow:-4px 0 24px rgba(0,0,0,.12);z-index:201;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;}
+.brp-panel.open{transform:none;}
+.brp-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--card);}
+.brp-title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;}
+.brp-close{background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);padding:4px;border-radius:6px;line-height:1;}
+.brp-close:hover{background:var(--bg);color:var(--text);}
+.brp-summary{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;gap:16px;background:var(--bg);}
+.brp-sum-item{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.brp-sum-val{font-family:var(--mono);font-size:22px;font-weight:700;}
+.brp-sum-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+.brp-sum-exec{color:var(--green)}.brp-sum-pend{color:var(--amber)}.brp-sum-tot{color:var(--blue)}
+.brp-list{flex:1;overflow-y:auto;padding:10px 0;}
+.brp-item{display:flex;align-items:center;gap:10px;padding:9px 20px;border-bottom:1px solid var(--border);font-size:13px;}
+.brp-item:last-child{border-bottom:none;}
+.brp-icon{font-size:15px;flex-shrink:0;width:20px;text-align:center;}
+.brp-sid{font-family:var(--mono);font-size:12px;font-weight:600;flex:1;}
+.brp-badge{font-family:var(--mono);font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;}
+.brp-badge-exec{background:var(--green-dim);color:var(--green);}
+.brp-badge-pend{background:var(--amber-dim);color:var(--amber);}
+.brp-badge-nourl{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+.brp-spinner{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--muted);font-size:13px;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.cfg-wrap{padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:end;}
+.cfg-field{display:flex;flex-direction:column;gap:6px;}
+.cfg-label{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.3px;}
+.cfg-input{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 13px;border-radius:8px;font-family:var(--mono);font-size:13px;outline:none;width:100%;}
+.cfg-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.1);}
+.cfg-checkbox-row{display:flex;align-items:center;gap:10px;padding:9px 0;}
+.cfg-checkbox{width:18px;height:18px;cursor:pointer;accent-color:var(--blue);}
+.cfg-checkbox-label{font-size:13px;color:var(--text2);font-weight:500;cursor:pointer;}
+.btn-cfg-save{background:var(--blue);color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:var(--sans);}
+.btn-cfg-save:hover{background:#2563eb;}.btn-cfg-save:disabled{opacity:.5;cursor:not-allowed;}
+.cfg-status{font-size:12px;font-family:var(--mono);color:var(--muted);padding:0 24px 16px;}
+.test-wrap{padding:16px 24px;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;border-top:1px solid var(--border);}
+.btn-test{background:#f5f3ff;color:#5b21b6;border:1.5px solid #c4b5fd;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:var(--sans);display:inline-flex;align-items:center;gap:7px;}
+.btn-test:hover:not(:disabled){background:#8b5cf6;color:#fff;border-color:#8b5cf6;}
+.btn-test:disabled{opacity:.4;cursor:not-allowed;}
+.test-status{font-size:12px;font-family:var(--mono);color:var(--muted);min-width:180px;}
+@media(max-width:640px){.cfg-wrap{grid-template-columns:1fr;}.topbar{padding:0 14px;}.main{padding:14px;}.stats-row{grid-template-columns:repeat(2,1fr);}.scripts-grid{grid-template-columns:1fr;}thead th:nth-child(n+5),tbody td:nth-child(n+5){display:none;}.broadcast-wrap{gap:8px;}.btn-bc{padding:8px 12px;font-size:12px;}}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style></head><body>
+<!-- Setup Screen -->
+<div id="setupScreen" style="display:none;position:fixed;inset:0;background:#f0f2f5;z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:40px;max-width:480px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.12);">
+    <div style="font-size:28px;margin-bottom:8px;">⚡</div>
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:8px;color:#111827;">Prevo Control Hub</h2>
+    <p style="font-size:14px;color:#6b7280;margin-bottom:24px;">Enter your Hub URL to get started</p>
+    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">HUB URL</label>
+    <input id="setupUrl" type="text" placeholder="https://script.google.com/macros/s/.../exec"
+      style="width:100%;padding:10px 14px;border:1.5px solid #e1e4ea;border-radius:8px;font-size:13px;font-family:monospace;outline:none;margin-bottom:16px;">
+    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">SECRET KEY</label>
+    <input id="setupSecret" type="text" placeholder="prevo2025xK9mQ" value="prevo2025xK9mQ"
+      style="width:100%;padding:10px 14px;border:1.5px solid #e1e4ea;border-radius:8px;font-size:13px;font-family:monospace;outline:none;margin-bottom:24px;">
+    <button onclick="saveSetup()"
+      style="width:100%;background:#3b82f6;color:#fff;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">
+      Connect to Hub
+    </button>
+    <div id="setupError" style="color:#ef4444;font-size:13px;margin-top:12px;text-align:center;"></div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="brand"><div class="brand-icon">⚡</div>Prevo Control Hub<div class="live-dot"></div></div>
+  <div class="topbar-right"><span class="last-upd" id="lastUpd">Connecting...</span><button class="btn btn-outline" id="btnRef" onclick="loadAll()">↻ Refresh</button></div>
+</div>
+<div class="main">
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">Active Accounts</div><div class="stat-value" id="sActive">—</div><div class="stat-sub">Ready to send</div></div></div>
+  <div class="stat-card"><div class="stat-icon si-red">🚨</div><div><div class="stat-label">Suspended</div><div class="stat-value" id="sSusp">—</div><div class="stat-sub">Need attention</div></div></div>
+  <div class="stat-card"><div class="stat-icon si-blue">📋</div><div><div class="stat-label">Total Accounts</div><div class="stat-value" id="sTotal">—</div><div class="stat-sub">All scripts</div></div></div>
+  <div class="stat-card"><div class="stat-icon si-amber">📨</div><div><div class="stat-label">Sent Today</div><div class="stat-value" id="sSent">—</div><div class="stat-sub">Total emails</div></div></div>
+  <div class="stat-card"><div class="stat-icon si-purple">💓</div><div><div class="stat-label">Live Scripts</div><div class="stat-value" id="sAlive">—</div><div class="stat-sub">Heartbeat active</div></div></div>
+</div>
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-title">⚙️ Campaign Config</div>
+    <span id="cfgBadge" class="badge badge-muted" style="display:none">saved</span>
+  </div>
+  <div class="cfg-wrap">
+    <div class="cfg-field">
+      <label class="cfg-label">FROM NAME</label>
+      <input class="cfg-input" id="cfgFrom" type="text" placeholder="Sender Name">
+    </div>
+    <div class="cfg-field">
+      <label class="cfg-label">SUBJECT</label>
+      <input class="cfg-input" id="cfgSubject" type="text" placeholder="Hello {{NAME}}">
+    </div>
+    <div class="cfg-field">
+      <label class="cfg-label">TEST EMAIL</label>
+      <input class="cfg-input" id="cfgTestEmail" type="email" placeholder="test@example.com">
+    </div>
+    <div class="cfg-field">
+      <label class="cfg-label">MONITOR EVERY (emails)</label>
+      <input class="cfg-input" id="cfgMonitorEvery" type="number" min="1" placeholder="50">
+    </div>
+    <div class="cfg-field">
+      <label class="cfg-label">DAILY LIMIT (per account)</label>
+      <input class="cfg-input" id="cfgDailyLimit" type="number" min="1" placeholder="100">
+    </div>
+    <div class="cfg-field">
+      <div class="cfg-checkbox-row">
+        <input class="cfg-checkbox" type="checkbox" id="cfgRandomize">
+        <label class="cfg-checkbox-label" for="cfgRandomize">Enable Invisible Randomizer</label>
+      </div>
+    </div>
+  </div>
+  <div style="padding:0 24px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    <button class="btn-cfg-save" id="btnCfgSave" onclick="saveConfig()">💾 Save Config</button>
+    <span class="cfg-status" id="cfgStatus"></span>
+  </div>
+  <div style="border-top:1px solid var(--border);padding:14px 24px;background:var(--card);">
+    <div style="font-weight:600;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px;">🧪 Test Control</div>
+    <div class="test-wrap" style="padding:0;border-top:none;">
+      <div class="cfg-field" style="min-width:200px;">
+        <label class="cfg-label">TARGET SCRIPT</label>
+        <select class="bc-select" id="testTarget" style="min-width:180px;">
+          <option value="all">📡 All Scripts</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:10px;">
+        <button class="btn-test" id="btnSendTest" onclick="sendTest()">📧 Send Test Email</button>
+        <span class="test-status" id="testStatus"></span>
+      </div>
+    </div>
+  </div>
+  <div class="cfg-status" id="cfgBadgeWrap" style="padding:0 24px 4px;"></div>
+</div>
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-title">🎮 Broadcast Control</div>
+    <span id="bcBadge" class="badge badge-muted" style="display:none"></span>
+  </div>
+  <div class="broadcast-wrap">
+    <select class="bc-select" id="bcTarget" onchange="updateBcBadge()">
+      <option value="all">📡 All Scripts</option>
+    </select>
+    <div class="bc-divider"></div>
+    <button class="btn-bc btn-bc-start" onclick="broadcast('start')">▶️ Start</button>
+    <button class="btn-bc btn-bc-stop"  onclick="broadcast('stop')">⏹️ Stop</button>
+    <button class="btn-bc btn-bc-reset" onclick="broadcast('reset')">🔄 Reset</button>
+    <button class="btn-bc btn-bc-links"    onclick="broadcast('links')">🔗 Refresh Links</button>
+    <button class="btn-bc btn-bc-template" onclick="broadcast('template')">📄 Update Template</button>
+    <span class="bc-status" id="bcStatus"></span>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-hdr"><div class="sec-title">💓 Scripts Health</div><span class="badge badge-muted" id="scBadge">loading...</span></div>
+  <div class="scripts-grid" id="scGrid"><div class="state-box"><div class="spinner"></div><p>Loading scripts...</p></div></div>
+</div>
+<div class="section">
+  <div class="sec-hdr">
+    <div class="sec-title">📋 Accounts</div>
+    <div style="display:flex;gap:8px;align-items:center"><button class="btn-react-all" onclick="reactivateAll()">✅ Reactivate All Suspended</button><span class="badge badge-red" id="suspBadge" style="display:none"></span></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('all',this)">All <span class="badge badge-muted" id="tAll">0</span></div>
+    <div class="tab" onclick="switchTab('suspended',this)">🚨 Suspended <span class="badge badge-red" id="tSusp">0</span></div>
+    <div class="tab" onclick="switchTab('active',this)">✅ Active <span class="badge badge-green" id="tAct">0</span></div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="search" placeholder="🔍 Search by email or script..." oninput="renderTable()">
+    <select id="fScript" onchange="renderTable()"><option value="">All Scripts</option></select>
+    <span class="filter-count" id="fCount">0 results</span>
+  </div>
+  <div class="table-wrap"><table><thead><tr>
+    <th>Script</th><th>Account</th><th>Status</th><th>Sent Today<br><span style="font-weight:400;opacity:.7">/ Yesterday</span></th><th>Total Sent ∞</th><th>Last Send</th><th>Error</th><th>Action</th>
+  </tr></thead><tbody id="tBody">
+    <tr><td colspan="8"><div class="state-box"><div class="spinner"></div><p>Loading...</p></div></td></tr>
+  </tbody></table></div>
+</div>
+<div class="section">
+  <div class="sec-hdr"><div class="sec-title">📜 Activity Log</div><button onclick="clearLog()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px">Clear</button></div>
+  <div class="log-area" id="logArea"><div class="log-line"><span class="log-time">--:--:--</span><span class="log-info">ℹ Connecting to hub...</span></div></div>
+</div>
+</div>
+<div class="toast-c" id="toastC"></div>
+<div class="brp-overlay" id="brpOverlay" onclick="closeBrp()"></div>
+<div class="brp-panel" id="brpPanel">
+  <div class="brp-header">
+    <div class="brp-title" id="brpTitle">🎮 Broadcast Results</div>
+    <button class="brp-close" onclick="closeBrp()">✕</button>
+  </div>
+  <div class="brp-summary" id="brpSummary" style="display:none">
+    <div class="brp-sum-item"><div class="brp-sum-val brp-sum-tot" id="brpTotal">0</div><div class="brp-sum-lbl">Total</div></div>
+    <div class="brp-sum-item"><div class="brp-sum-val brp-sum-exec" id="brpExec">0</div><div class="brp-sum-lbl">Executed ✅</div></div>
+    <div class="brp-sum-item"><div class="brp-sum-val brp-sum-pend" id="brpPend">0</div><div class="brp-sum-lbl">Pending ⏳</div></div>
+  </div>
+  <div class="brp-list" id="brpList">
+    <div class="brp-spinner"><div class="spinner"></div>Sending commands...</div>
+  </div>
+</div>
+<script>
+// Setup functions
+function saveSetup(){
+  var url = document.getElementById('setupUrl').value.trim();
+  var sec = document.getElementById('setupSecret').value.trim();
+  if(!url){document.getElementById('setupError').textContent='Please enter Hub URL';return;}
+  if(!url.endsWith('/exec')){document.getElementById('setupError').textContent='URL must end with /exec';return;}
+  localStorage.setItem('prevo_hub_url', url);
+  localStorage.setItem('prevo_hub_secret', sec||'prevo2025xK9mQ');
+  HUB_URL = url;
+  SECRET  = sec||'prevo2025xK9mQ';
+  document.getElementById('setupScreen').style.display='none';
+  loadAll();
+}
+function checkSetup(){
+  var url = localStorage.getItem('prevo_hub_url');
+  if(!url){
+    document.getElementById('setupScreen').style.display='flex';
+  } else {
+    HUB_URL = url;
+    SECRET  = localStorage.getItem('prevo_hub_secret')||'prevo2025xK9mQ';
+    document.getElementById('setupScreen').style.display='none';
+    loadAll();
+  }
+}
+var HUB_URL = localStorage.getItem('prevo_hub_url') || '';
+var SECRET  = localStorage.getItem('prevo_hub_secret') || 'prevo2025xK9mQ';
+var state={accounts:[],scripts:[],tab:"all"};
+var scriptColorMap={};var colorCounter=0;
+function chipClass(id){if(!(id in scriptColorMap)){scriptColorMap[id]=colorCounter%12;colorCounter++;}return"chip chip-c"+scriptColorMap[id];}
+async function callHub(payload){
+  // URLSearchParams بدل JSON لتجنب CORS preflight
+  var data = new URLSearchParams();
+  data.append('payload', JSON.stringify(Object.assign({}, payload, {secret: SECRET})));
+  var r = await fetch(HUB_URL, {method: "POST", body: data});
+  if(!r.ok) throw new Error("HTTP " + r.status);
+  var d = await r.json();
+  if(!d.success) throw new Error(d.error || "Unknown error");
+  return d;
+}
+async function loadAll(){
+  var btn=document.getElementById("btnRef");
+  btn.disabled=true;btn.textContent="⏳ Loading...";
+  try{
+    var [accData,healthData,cfgData]=await Promise.all([
+      callHub({action:"get_all_accounts"}),
+      callHub({action:"get_scripts_health"}),
+      callHub({action:"get_config"})
+    ]);
+    state.accounts=accData.accounts||[];
+    state.scripts=healthData.scripts||[];
+    updateStats();renderScripts();renderTable();updateFilter();populateBcDropdown();
+    if(cfgData.config){
+      document.getElementById("cfgFrom").value=cfgData.config.from_name||"";
+      document.getElementById("cfgSubject").value=cfgData.config.subject||"";
+      document.getElementById("cfgTestEmail").value=cfgData.config.test_email||"";
+      document.getElementById("cfgMonitorEvery").value=cfgData.config.monitor_every||50;
+      document.getElementById("cfgDailyLimit").value=cfgData.config.daily_limit||100;
+      document.getElementById("cfgRandomize").checked=cfgData.config.randomize===true;
+      var badge=document.getElementById("cfgBadge");
+      badge.style.display="";badge.textContent="loaded";
+      setTimeout(function(){badge.style.display="none";},2000);
+    }
+    // تحديث قائمة Test Target
+    populateTestDropdown();
+    var now=new Date().toLocaleTimeString("en-US",{hour12:false});
+    document.getElementById("lastUpd").textContent="Updated: "+now;
+    log("ok","Loaded "+state.accounts.length+" accounts / "+state.scripts.length+" scripts");
+  }catch(e){log("err","Failed: "+e.message);toast("Connection failed: "+e.message,"error");}
+  finally{btn.disabled=false;btn.textContent="↻ Refresh";}
+}
+async function saveConfig(){
+  var btn=document.getElementById("btnCfgSave");
+  var status=document.getElementById("cfgStatus");
+  var from_name=document.getElementById("cfgFrom").value.trim();
+  var subject=document.getElementById("cfgSubject").value.trim();
+  var test_email=document.getElementById("cfgTestEmail").value.trim();
+  var monitor_every=parseInt(document.getElementById("cfgMonitorEvery").value)||50;
+  var daily_limit=parseInt(document.getElementById("cfgDailyLimit").value)||100;
+  var randomize=document.getElementById("cfgRandomize").checked;
+  if(!from_name||!subject){toast("Please fill From Name and Subject","error");return;}
+  btn.disabled=true;btn.textContent="⏳ Saving...";status.textContent="";
+  try{
+    await callHub({action:"save_config",from_name,subject,test_email,monitor_every,daily_limit,randomize});
+    var badge=document.getElementById("cfgBadge");
+    badge.className="badge badge-green";badge.textContent="✓ saved";badge.style.display="";
+    setTimeout(()=>{badge.style.display="none";},3000);
+    status.textContent="✅ Config saved — will apply on next campaign start";
+    log("ok","Config saved: from="+from_name+" | subject="+subject+" | test="+test_email+" | monitor="+monitor_every+" | limit="+daily_limit+" | randomize="+randomize);
+    toast("✅ Config saved successfully","success");
+    setTimeout(()=>{status.textContent="";},5000);
+  }catch(e){
+    status.textContent="❌ "+e.message;
+    toast("Failed: "+e.message,"error");
+    log("err","Config save failed: "+e.message);
+    setTimeout(()=>{status.textContent="";},4000);
+  }finally{btn.disabled=false;btn.textContent="💾 Save Config";}
+}
+function populateTestDropdown(){
+  var sel=document.getElementById("testTarget");
+  if(!sel)return;
+  var currentVal=sel.value;
+  var ids=[...new Set(state.scripts.map(function(s){return s.scriptId;}))].sort();
+  while(sel.options.length>0)sel.remove(0);
+  var allOpt=document.createElement("option");
+  allOpt.value="all";allOpt.textContent="📡 All Scripts ("+ids.length+")";
+  sel.appendChild(allOpt);
+  ids.forEach(function(id){
+    var opt=document.createElement("option");
+    opt.value=id;
+    var sc=state.scripts.find(function(s){return s.scriptId===id;});
+    var icon=sc&&sc.status==="alive"?"🟢":sc&&sc.status==="dead"?"🔴":"⚪";
+    opt.textContent=icon+" "+id;
+    sel.appendChild(opt);
+  });
+  if(currentVal){for(var j=0;j<sel.options.length;j++){if(sel.options[j].value===currentVal){sel.value=currentVal;break;}}}
+}
+async function sendTest(){
+  var target=document.getElementById("testTarget").value;
+  var testEmail=document.getElementById("cfgTestEmail").value.trim();
+  if(!testEmail){toast("Please enter a Test Email in Campaign Config","error");return;}
+  var targetLabel=target==="all"?"all "+state.scripts.length+" scripts":target;
+  if(!confirm("📧 Send test email to "+testEmail+"\nTarget: "+targetLabel+"?"))return;
+  var btn=document.getElementById("btnSendTest");
+  var status=document.getElementById("testStatus");
+  btn.disabled=true;btn.textContent="⏳ Sending...";status.textContent="";
+  try{
+    var r=await callHub({action:"broadcast_test",targetScriptId:target});
+    var msg="📧 Test sent: "+r.executed+" executed, "+r.pending+" pending";
+    status.textContent=msg;
+    log("ok","Test shot → "+targetLabel+" | executed:"+r.executed+" pending:"+r.pending);
+    toast("✅ Test dispatched to "+r.total+" script(s)","success");
+    openBrp("📧 Test Email Results");
+    renderBrpResults(r);
+    setTimeout(()=>{status.textContent="";},6000);
+  }catch(e){
+    status.textContent="❌ "+e.message;
+    toast("Failed: "+e.message,"error");
+    log("err","Test send failed: "+e.message);
+    setTimeout(()=>{status.textContent="";},4000);
+  }finally{btn.disabled=false;btn.textContent="📧 Send Test Email";}
+}
+function updateStats(){
+  var active=state.accounts.filter(a=>a.status==="Active").length;
+  var susp=state.accounts.filter(a=>a.status==="Suspended").length;
+  var total=state.accounts.length;
+  var sent=state.accounts.reduce((s,a)=>s+(parseInt(a.emailsSentToday)||0),0);
+  var alive=state.scripts.filter(s=>s.status==="alive").length;
+  anim("sActive",active);anim("sSusp",susp);anim("sTotal",total);anim("sSent",sent);anim("sAlive",alive);
+  document.getElementById("tAll").textContent=total;
+  document.getElementById("tSusp").textContent=susp;
+  document.getElementById("tAct").textContent=active;
+  var sb=document.getElementById("suspBadge");
+  sb.style.display=susp>0?"":"none";sb.textContent=susp+" suspended";
+}
+function anim(id,target){var el=document.getElementById(id);var start=parseInt(el.textContent)||0;var step=0;var t=setInterval(()=>{step++;el.textContent=Math.round(start+(target-start)*step/20);if(step>=20){el.textContent=target;clearInterval(t);}},20);}
+function renderScripts(){
+  var g=document.getElementById("scGrid");
+  document.getElementById("scBadge").textContent=state.scripts.length+" scripts";
+  if(!state.scripts.length){
+    g.innerHTML="";
+    var sb=document.createElement("div");sb.className="state-box";
+    sb.innerHTML="<div class="state-icon">-</div><p>No scripts yet</p>";
+    g.appendChild(sb);return;
+  }
+  g.innerHTML="";
+  state.scripts.forEach(function(s){
+    var icon=s.status==="alive"?"[OK]":s.status==="dead"?"[X]":"[?]";
+    var beat=s.lastHeartbeat?timeSince(new Date(s.lastHeartbeat)):"Never";
+    var d=document.createElement("div");d.className="sc "+(s.status||"unknown");
+    d.innerHTML="<div class="sc-id"><span class=""+chipClass(s.scriptId)+"">"+icon+" "+s.scriptId+"</span></div>"
+      +"<div class="sc-meta"><div><div class="sm-lbl">Active</div><div class="sm-val" style="color:var(--green)">"+( s.activeCount||0)+"</div></div>"
+      +"<div><div class="sm-lbl">Today</div><div class="sm-val" style="color:var(--blue)">"+( s.todaySent||0)+"</div></div></div>"
+      +"<div class="sc-beat">Last beat: "+beat+"</div>";
+    g.appendChild(d);
+  });
+}
+function switchTab(tab,el){state.tab=tab;document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));el.classList.add("active");renderTable();}
+function renderTable(){
+  var search=document.getElementById("search").value.toLowerCase();
+  var scriptF=document.getElementById("fScript").value;
+  var tab=state.tab;
+  var filtered=state.accounts.filter(function(a){
+    if(tab==="suspended"&&a.status!=="Suspended")return false;
+    if(tab==="active"&&a.status!=="Active")return false;
+    if(scriptF&&a.scriptId!==scriptF)return false;
+    if(search)return(a.zohoEmail+" "+a.scriptId+" "+(a.errorLog||"")).toLowerCase().indexOf(search)>=0;
+    return true;
+  });
+  document.getElementById("fCount").textContent=filtered.length+" results";
+  var tbody=document.getElementById("tBody");
+  tbody.innerHTML="";
+  if(!filtered.length){
+    var tr=document.createElement("tr");var td=document.createElement("td");
+    td.colSpan=8;td.innerHTML="<div class="state-box"><p>"+(tab==="suspended"?"No suspended accounts":"No results")+"</p></div>";
+    tr.appendChild(td);tbody.appendChild(tr);return;
+  }
+  filtered.forEach(function(a){
+    var susp=a.status==="Suspended";
+    var pill=susp?"<span class="pill pill-susp"><span class="dot2"></span>Suspended</span>"
+      :a.status==="Warming"?"<span class="pill pill-warm"><span class="dot2"></span>Warming</span>"
+      :"<span class="pill pill-active"><span class="dot2"></span>Active</span>";
+    var ls=a.lastSendTime?new Date(a.lastSendTime).toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"--";
+    var err=a.errorLog?(a.errorLog.substring(0,45)+(a.errorLog.length>45?"...":"")):"--";
+    var yest=a.yesterdaySent||0;
+    var chip="<span class=""+chipClass(a.scriptId)+"">"+a.scriptId+"</span>";
+    var sentCell="<div class="sent-today-wrap"><div class="sent-today-main">"+( a.emailsSentToday||0)+"</div><div class="sent-yest">Yesterday: "+yest+"</div></div>";
+    var totalCell="<span class="num-cell">"+( a.totalEmailsSent||0).toLocaleString()+"</span>";
+    var actHtml;if(susp){actHtml="<button class="btn-react" data-em=""+a.zohoEmail+"">Reactivate</button>";}else{actHtml="<span style="color:var(--muted)">--</span>";}
+    var tr=document.createElement("tr");if(susp)tr.className="row-susp";
+    tr.innerHTML="<td>"+chip+"</td><td class="email-cell" title=""+a.zohoEmail+"">"+a.zohoEmail+"</td><td>"+pill+"</td><td>"+sentCell+"</td><td>"+totalCell+"</td><td style="font-size:12px;color:var(--muted)">"+ls+"</td><td class="error-cell">"+err+"</td><td>"+actHtml+"</td>";
+    tbody.appendChild(tr);
+    if(susp){var rb=tr.querySelector(".btn-react");if(rb)rb.onclick=function(){reactAccount(this.getAttribute("data-em"),this);};}
+  });
+}
+function updateFilter(){
+  var fSel=document.getElementById("fScript");
+  var ids=[...new Set(state.accounts.map(function(a){return a.scriptId;}))].sort();
+  while(fSel.options.length>0)fSel.remove(0);
+  var defOpt=document.createElement("option");defOpt.value="";defOpt.textContent="All Scripts";fSel.appendChild(defOpt);
+  ids.forEach(function(id){var o=document.createElement("option");o.value=id;o.textContent=id;fSel.appendChild(o);});
+}
+function populateBcDropdown(){
+  var sel=document.getElementById("bcTarget");
+  var curVal=sel.value;
+  var ids=[...new Set(state.scripts.map(function(s){return s.scriptId;}))].sort();
+  while(sel.options.length>0)sel.remove(0);
+  var ao=document.createElement("option");ao.value="all";ao.textContent="All Scripts ("+ids.length+")";sel.appendChild(ao);
+  ids.forEach(function(id){
+    var opt=document.createElement("option");opt.value=id;
+    var sc=state.scripts.find(function(s){return s.scriptId===id;});
+    var icon=sc&&sc.status==="alive"?"🟢":sc&&sc.status==="dead"?"🔴":"⚪";
+    opt.textContent=icon+" "+id;sel.appendChild(opt);
+  });
+  for(var k=0;k<sel.options.length;k++){if(sel.options[k].value===curVal){sel.value=curVal;break;}}
+  updateBcBadge();
+}
+function updateBcBadge(){
+  var sel=document.getElementById("bcTarget");
+  var badge=document.getElementById("bcBadge");
+  if(sel.value==="all"){var cnt=state.scripts.length;badge.textContent=cnt+" script"+(cnt!==1?"s":"")+" targeted";badge.className="badge badge-blue";}
+  else{badge.textContent=sel.options[sel.selectedIndex].textContent;badge.className="badge badge-muted";}
+  badge.style.display="";
+}
+async function broadcast(type){
+  var sel=document.getElementById("bcTarget");
+  var target=sel.value;
+  var targetLabel=target==="all"?"all "+state.scripts.length+" scripts":target;
+  var labels={start:"Start",stop:"Stop",reset:"Reset",links:"Refresh Links",template:"Update Template"};
+  var icons={start:"\u25b6\ufe0f",stop:"\u23f9\ufe0f",reset:"\ud83d\udd04",links:"\ud83d\udd17",template:"\ud83d\udcc4"};
+  var confirms={start:"Send START to "+targetLabel+"?",stop:"Send STOP to "+targetLabel+"?",reset:"Send RESET to "+targetLabel+"?",links:"Refresh Links on "+targetLabel+"?",template:"Update Template on "+targetLabel+"?"};
+  if(!confirm(confirms[type]||type+" on "+targetLabel+"?"))return;
+  var btns=document.querySelectorAll(".btn-bc");
+  var bcSt=document.getElementById("bcStatus");
+  btns.forEach(function(b){b.disabled=true;});
+  bcSt.textContent="Sending...";
+  openBrp((labels[type]||type));
+  try{
+    var am={start:"broadcast_start",stop:"broadcast_stop",reset:"broadcast_reset",links:"broadcast_links",template:"broadcast_template"};
+    var ba=am[type]||("broadcast_"+type);
+    var r=await callHub({action:ba,targetScriptId:target});
+    renderBrpResults(r);
+    bcSt.textContent=(labels[type]||type)+": "+r.executed+" executed, "+r.pending+" pending";
+    log("ok",(labels[type]||type)+" executed:"+r.executed+" pending:"+r.pending);
+    toast("Done: "+r.executed+"/"+r.total+" executed","success");
+    setTimeout(function(){bcSt.textContent="";},6000);
+  }catch(e){
+    document.getElementById("brpList").innerHTML="<div style="padding:20px;text-align:center;color:var(--red)">Error: "+e.message+"</div>";
+    bcSt.textContent="Error: "+e.message;
+    log("err","Broadcast failed: "+e.message);
+    toast("Failed: "+e.message,"error");
+    setTimeout(function(){bcSt.textContent="";},4000);
+  }
+  finally{btns.forEach(function(b){b.disabled=false;});}
+}
+function openBrp(title){
+  document.getElementById("brpTitle").textContent=title||"Broadcast";
+  document.getElementById("brpSummary").style.display="none";
+  document.getElementById("brpList").innerHTML="<div style="padding:40px;text-align:center;color:var(--muted)"><div class="spinner" style="margin:0 auto 10px"></div>Sending...</div>";
+  document.getElementById("brpOverlay").style.display="block";
+  document.getElementById("brpPanel").classList.add("open");
+}
+function closeBrp(){
+  document.getElementById("brpOverlay").style.display="none";
+  document.getElementById("brpPanel").classList.remove("open");
+}
+function renderBrpResults(r){
+  document.getElementById("brpTotal").textContent=r.total||0;
+  document.getElementById("brpExec").textContent=r.executed||0;
+  document.getElementById("brpPend").textContent=r.pending||0;
+  document.getElementById("brpSummary").style.display="flex";
+  var rs=r.results||[];
+  if(!rs.length){document.getElementById("brpList").innerHTML="<div style="padding:20px;text-align:center">No results</div>";return;}
+  document.getElementById("brpList").innerHTML=rs.map(function(s){
+    var ok=s.status==="executed";
+    var ic=ok?"✅":s.hasUrl?"⏳":"📴";
+    var cl=ok?"brp-badge-exec":s.hasUrl?"brp-badge-pend":"brp-badge-nourl";
+    var lb=ok?"executed":s.hasUrl?"pending":"no url";
+    return"<div class="brp-item"><span class="brp-icon">"+ic+"</span><span class="brp-sid">"+s.scriptId+"</span><span class="brp-badge "+cl+"">"+lb+"</span></div>";
+  }).join("");
+}
+async function reactAccount(email,btn){btn.disabled=true;btn.textContent="⏳...";try{await callHub({action:"reactivate_account",zohoEmail:email});var a=state.accounts.find(a=>a.zohoEmail===email);if(a){a.status="Active";a.errorLog="";}renderTable();updateStats();toast("✅ Reactivated: "+email,"success");log("ok","Reactivated: "+email);}catch(e){btn.disabled=false;btn.textContent="✅ Reactivate";toast("Failed: "+e.message,"error");log("err","Reactivation failed: "+email);}}
+async function reactivateAll(){
+  var susp=state.accounts.filter(a=>a.status==="Suspended");
+  if(!susp.length){toast("No suspended accounts","info");return;}
+  if(!confirm("Reactivate "+susp.length+" suspended account(s)?"))return;
+  log("warn","Reactivating "+susp.length+" accounts...");
+  var done=0;
+  for(var a of susp){try{await callHub({action:"reactivate_account",zohoEmail:a.zohoEmail});a.status="Active";a.errorLog="";done++;await new Promise(r=>setTimeout(r,300));}catch{log("err","Failed: "+a.zohoEmail);}}
+  renderTable();updateStats();toast("✅ Reactivated "+done+"/"+susp.length+" accounts","success");log("ok","Bulk done: "+done+"/"+susp.length);
+}
+function timeSince(d){var s=Math.floor((new Date()-d)/1000);if(s<60)return s+"s ago";if(s<3600)return Math.floor(s/60)+"m ago";if(s<86400)return Math.floor(s/3600)+"h ago";return Math.floor(s/86400)+"d ago";}
+function toast(msg,type="info"){var c=document.getElementById("toastC");var t=document.createElement("div");t.className="toast toast-"+type;t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),4000);}
+function log(type,msg){
+  var area=document.getElementById("logArea");
+  var time=new Date().toLocaleTimeString("en-US",{hour12:false});
+  var icons={ok:"OK",err:"ERR",info:"INFO",warn:"WARN"};
+  var line=document.createElement("div");line.className="log-line";
+  var ts=document.createElement("span");ts.className="log-time";ts.textContent=time;
+  var ms=document.createElement("span");
+  ms.className="log-"+(type==="err"?"err":type==="ok"?"ok":type==="warn"?"warn":"info");
+  ms.textContent=(icons[type]||type)+" "+msg;
+  line.appendChild(ts);line.appendChild(ms);
+  area.insertBefore(line,area.firstChild);
+  if(area.children.length>60)area.removeChild(area.lastChild);
+}
+function resetSetup(){
+  if(confirm('Change Hub URL?')){
+    localStorage.removeItem('prevo_hub_url');
+    localStorage.removeItem('prevo_hub_secret');
+    document.getElementById('setupUrl').value='';
+    document.getElementById('setupError').textContent='';
+    document.getElementById('setupScreen').style.display='flex';
+  }
+}
+function clearLog(){document.getElementById("logArea").innerHTML="";}
+checkSetup();
+setInterval(loadAll,120000);
+</script></body></html>
