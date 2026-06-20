@@ -789,13 +789,12 @@ function broadcast(type) {
 
   var btns   = document.querySelectorAll('.btn-bc');
   var status = document.getElementById('bc-status');
-  btns.forEach(function(b){ b.disabled = true; });
+  // الأزرار تبقى مفعلة دائماً — فقط نُظهر حالة الإرسال
   status.textContent = 'Sending...';
   openBrp(labels[type] || type);
 
   var actionMap = {start:'broadcast_start',stop:'broadcast_stop',reset:'broadcast_reset',links:'broadcast_links',template:'broadcast_template'};
   callHub({action: actionMap[type] || 'broadcast_'+type, targetScriptId: target}, function(e, r) {
-    btns.forEach(function(b){ b.disabled = false; });
     if (e) {
       document.getElementById('brp-list').innerHTML = '<div class="state"><p style="color:var(--red)">Error: ' + e.message + '</p></div>';
       status.textContent = 'Error: ' + e.message;
