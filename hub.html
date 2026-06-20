@@ -725,10 +725,21 @@ function saveConfig() {
     toast('Config saved','ok');
     addLog('ok','Config saved — broadcasting to scripts');
 
-    // تطبيق فوري على كل السكريبتات
+    // تطبيق فوري على كل السكريبتات — نرسل config مع الأمر مباشرة
     var target = document.getElementById('bc-target') ?
                  document.getElementById('bc-target').value : 'all';
-    callHub({action: 'broadcast_update_config', targetScriptId: target}, function(e2, r2) {
+    callHub({
+      action:        'broadcast_update_config',
+      targetScriptId: target,
+      config: {
+        from_name:     payload.from_name,
+        subject:       payload.subject,
+        test_email:    payload.test_email,
+        monitor_every: payload.monitor_every,
+        daily_limit:   payload.daily_limit,
+        randomize:     payload.randomize
+      }
+    }, function(e2, r2) {
       if (e2) {
         msg.textContent = 'Config saved but broadcast failed: ' + e2.message;
         setTimeout(function(){ msg.textContent = ''; }, 5000);
