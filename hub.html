@@ -580,7 +580,13 @@ function renderScripts() {
         '<div><div class="sm-lbl">Active</div><div class="sm-val" style="color:var(--green)">' + (s.activeCount||0) + '</div></div>' +
         '<div><div class="sm-lbl">Today</div><div class="sm-val" style="color:var(--blue)">' + (s.todaySent||0) + '</div></div>' +
       '</div>' +
-      '<div class="sc-beat">Last beat: ' + beat + '</div>';
+      '<div class="sc-beat">Last beat: ' + beat + '</div>' +
+      // تحذير /dev URL
+      (s.scriptUrl && s.scriptUrl.indexOf('/dev') > -1
+        ? '<div style="margin-top:8px;padding:5px 8px;background:#fee2e2;border-radius:6px;font-size:10px;color:#991b1b;font-weight:600;">⚠️ URL is /dev — redeploy as Web App</div>'
+        : (!s.scriptUrl
+          ? '<div style="margin-top:8px;padding:5px 8px;background:#fef3c7;border-radius:6px;font-size:10px;color:#92400e;font-weight:600;">⚠️ No Web App URL — instant commands disabled</div>'
+          : ''));
     g.appendChild(d);
   });
 }
