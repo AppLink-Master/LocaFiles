@@ -466,13 +466,14 @@ td{padding:10px 16px;vertical-align:middle}
 
 <script>
 // ── State ──────────────────────────────────────────────────────
-var HUB_URL = '';
-var SECRET  = '';
-var accounts = [];
-var scripts  = [];
-var curTab   = 'all';
-var chipMap  = {};
-var chipCnt  = 0;
+var HUB_URL    = '';
+var SECRET     = '';
+var accounts   = [];
+var scripts    = [];
+var curTab     = 'all';
+var chipMap    = {};
+var chipCnt    = 0;
+var msSelected = { bc: [], test: [] };
 
 // ── Setup ──────────────────────────────────────────────────────
 window.onload = function() {
@@ -487,6 +488,14 @@ window.onload = function() {
   document.getElementById('btn-connect').addEventListener('click', connect);
   document.getElementById('inp-url').addEventListener('keydown', function(e){
     if(e.key === 'Enter') connect();
+  });
+  // إغلاق dropdowns عند الضغط خارجها
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.ms-container')) {
+      document.querySelectorAll('.ms-dropdown').forEach(function(d) {
+        d.style.display = 'none';
+      });
+    }
   });
 };
 
@@ -763,9 +772,7 @@ function updateFilter() {
   });
 }
 
-// ── Multi-Select State ─────────────────────────────────────────
-var msSelected = { bc: [], test: [] }; // [] = all scripts
-
+// ── Multi-Select Functions ─────────────────────────────────────
 function toggleMsDropdown(prefix) {
   var dd = document.getElementById(prefix + '-ms-dropdown');
   var allDds = document.querySelectorAll('.ms-dropdown');
@@ -773,14 +780,7 @@ function toggleMsDropdown(prefix) {
   dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
 }
 
-// إغلاق dropdown عند الضغط خارجه
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.ms-container')) {
-    document.querySelectorAll('.ms-dropdown').forEach(function(d) {
-      d.style.display = 'none';
-    });
-  }
-});
+// إغلاق dropdown عند الضغط خارجه — يُضاف بعد تحميل DOM
 
 function msToggleScript(prefix, scriptId) {
   var sel = msSelected[prefix];
