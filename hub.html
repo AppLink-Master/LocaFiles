@@ -169,8 +169,8 @@ td{padding:10px 16px;vertical-align:middle}
 .ms-chip-x{cursor:pointer;font-size:11px;opacity:.6;margin-left:1px;line-height:1}
 .ms-chip-x:hover{opacity:1;color:var(--red)}
 /* القائمة المنسدلة — في مكانها */
-.ms-dd{position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:9999;min-width:180px;max-height:220px;overflow-y:auto;display:none}
-.ms-container{position:relative;display:inline-block}
+.ms-dd{position:fixed;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:9999;min-width:180px;max-height:240px;overflow-y:auto;display:none}
+.ms-container{display:inline-block}
 .ms-opt{padding:7px 14px;font-size:12px;font-family:var(--mono);cursor:pointer;display:flex;align-items:center;gap:8px}
 .ms-opt:hover{background:var(--bg)}.ms-opt.sel{background:var(--blue-dim);color:var(--blue);font-weight:600}
 .ms-ck{width:14px;font-size:11px}
@@ -414,6 +414,9 @@ window.onload = function() {
       document.querySelectorAll('.ms-dd').forEach(function(d){ d.style.display='none'; });
     }
   });
+  document.addEventListener('scroll', function(){
+    document.querySelectorAll('.ms-dd').forEach(function(d){ d.style.display='none'; });
+  }, true);
 };
 
 function connect() {
@@ -691,9 +694,18 @@ function updateFilter() {
 // ── [Fix3] Multi-Select Functions ─────────────────────────────
 function toggleMs(prefix, e) {
   e.stopPropagation();
-  var dd = document.getElementById(prefix + '-ms-dd');
+  var btnId = prefix === 'test' ? 'test-ms-btn' : 'bc-ms-btn';
+  var dd    = document.getElementById(prefix + '-ms-dd');
+  var btn   = document.getElementById(btnId);
+  // إغلاق كل القوائم الأخرى
   document.querySelectorAll('.ms-dd').forEach(function(d){ if (d !== dd) d.style.display = 'none'; });
-  dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+  if (dd.style.display === 'block') { dd.style.display = 'none'; return; }
+  // تحديد الموضع بدقة
+  var r = btn.getBoundingClientRect();
+  dd.style.top      = (r.bottom + 4) + 'px';
+  dd.style.left     = r.left + 'px';
+  dd.style.minWidth = r.width + 'px';
+  dd.style.display  = 'block';
 }
 
 function msToggle(prefix, id) {
