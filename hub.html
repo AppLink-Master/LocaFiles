@@ -171,6 +171,19 @@ td{padding:10px 16px;vertical-align:middle}
 .t-inf{background:var(--blue-dim);color:#1e40af;border-color:#93c5fd}
 @keyframes slideIn{from{transform:translateX(16px);opacity:0}to{transform:none;opacity:1}}
 
+/* Multi-Select Scripts */
+.ms-wrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:38px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;min-width:200px}
+.ms-chip{display:inline-flex;align-items:center;gap:4px;background:var(--blue-dim);color:var(--blue);border:1px solid #93c5fd;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+.ms-chip-x{cursor:pointer;font-size:13px;line-height:1;opacity:.7;margin-left:2px}
+.ms-chip-x:hover{opacity:1}
+.ms-placeholder{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.ms-dropdown{position:absolute;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:50;min-width:200px;max-height:220px;overflow-y:auto;margin-top:4px}
+.ms-option{padding:8px 14px;font-size:13px;font-family:var(--mono);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s}
+.ms-option:hover{background:var(--bg)}
+.ms-option.selected{background:var(--blue-dim);color:var(--blue)}
+.ms-option-icon{width:14px;text-align:center}
+.ms-container{position:relative;display:inline-block}
+
 /* BRP Panel */
 .brp-ov{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none}
 .brp{position:fixed;top:0;right:0;height:100%;width:360px;max-width:94vw;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.12);z-index:201;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s}
@@ -337,7 +350,12 @@ td{padding:10px 16px;vertical-align:middle}
     <div class="test-wrap">
       <div>
         <span class="test-lbl">TARGET SCRIPT</span>
-        <select class="bc-sel" id="test-target"><option value="all">All Scripts</option></select>
+        <div class="ms-container" id="test-ms-container">
+          <div class="ms-wrap" id="test-ms-wrap" onclick="toggleMsDropdown('test')">
+            <span class="ms-placeholder" id="test-ms-placeholder">📡 All Scripts</span>
+          </div>
+          <div class="ms-dropdown" id="test-ms-dropdown" style="display:none"></div>
+        </div>
       </div>
       <div>
         <span class="test-lbl">&nbsp;</span>
@@ -354,7 +372,12 @@ td{padding:10px 16px;vertical-align:middle}
       <span id="bc-badge" class="badge bm" style="display:none"></span>
     </div>
     <div class="bc-wrap">
-      <select class="bc-sel" id="bc-target" onchange="updateBcBadge()"><option value="all">All Scripts</option></select>
+      <div class="ms-container" id="bc-ms-container">
+        <div class="ms-wrap" id="bc-ms-wrap" onclick="toggleMsDropdown('bc')">
+          <span class="ms-placeholder" id="bc-ms-placeholder">📡 All Scripts</span>
+        </div>
+        <div class="ms-dropdown" id="bc-ms-dropdown" style="display:none"></div>
+      </div>
       <button class="btn-bc bc-start" onclick="broadcast('start')">&#9654;&#65039; Start</button>
       <button class="btn-bc bc-stop"  onclick="broadcast('stop')">&#9209;&#65039; Stop</button>
       <button class="btn-bc bc-reset" onclick="broadcast('reset')">&#128260; Reset</button>
@@ -632,6 +655,8 @@ function renderScripts() {
 
     var d = document.createElement('div');
     d.className = 'sc ' + (s.status || 'unknown');
+    var rem = s.remainingContacts || 0;
+    var remColor = rem === 0 ? 'var(--red)' : rem < 100 ? 'var(--amber)' : 'var(--blue)';
     d.innerHTML =
       '<div class="sc-id"><span class="' + chipClass(s.scriptId) + '">' + icon + ' ' + s.scriptId + '</span></div>' +
       '<div style="margin-bottom:8px">' +
@@ -640,6 +665,10 @@ function renderScripts() {
       '<div class="sc-meta">' +
         '<div><div class="sm-lbl">Active</div><div class="sm-val" style="color:var(--green)">' + (s.activeCount||0) + '</div></div>' +
         '<div><div class="sm-lbl">Today</div><div class="sm-val" style="color:var(--blue)">' + (s.todaySent||0) + '</div></div>' +
+      '</div>' +
+      '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">' +
+        '<span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px">Remaining</span>' +
+        '<span style="font-family:var(--mono);font-size:14px;font-weight:700;color:' + remColor + '">' + rem.toLocaleString() + '</span>' +
       '</div>' +
       '<div class="sc-beat">Last beat: ' + beat + '</div>' +
       // تحذير /dev URL
@@ -734,35 +763,116 @@ function updateFilter() {
   });
 }
 
+// ── Multi-Select State ─────────────────────────────────────────
+var msSelected = { bc: [], test: [] }; // [] = all scripts
+
+function toggleMsDropdown(prefix) {
+  var dd = document.getElementById(prefix + '-ms-dropdown');
+  var allDds = document.querySelectorAll('.ms-dropdown');
+  allDds.forEach(function(d) { if (d !== dd) d.style.display = 'none'; });
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+
+// إغلاق dropdown عند الضغط خارجه
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.ms-container')) {
+    document.querySelectorAll('.ms-dropdown').forEach(function(d) {
+      d.style.display = 'none';
+    });
+  }
+});
+
+function msToggleScript(prefix, scriptId) {
+  var sel = msSelected[prefix];
+  var idx = sel.indexOf(scriptId);
+  if (idx === -1) sel.push(scriptId);
+  else sel.splice(idx, 1);
+  renderMsChips(prefix);
+  renderMsDropdown(prefix);
+  if (prefix === 'bc') updateBcBadge();
+}
+
+function msSelectAll(prefix) {
+  msSelected[prefix] = [];
+  renderMsChips(prefix);
+  renderMsDropdown(prefix);
+  if (prefix === 'bc') updateBcBadge();
+}
+
+function renderMsChips(prefix) {
+  var wrap = document.getElementById(prefix + '-ms-wrap');
+  var ph   = document.getElementById(prefix + '-ms-placeholder');
+  var sel  = msSelected[prefix];
+  // احذف chips القديمة
+  wrap.querySelectorAll('.ms-chip').forEach(function(c) { c.remove(); });
+  if (sel.length === 0) {
+    ph.style.display = '';
+    ph.textContent   = '📡 All Scripts (' + scripts.length + ')';
+  } else {
+    ph.style.display = 'none';
+    sel.forEach(function(id) {
+      var chip = document.createElement('span');
+      chip.className = 'ms-chip';
+      var sc   = scripts.find(function(s) { return s.scriptId === id; });
+      var icon = sc && sc.status === 'alive' ? '🟢' : '⚪';
+      chip.innerHTML = icon + ' ' + id +
+        '<span class="ms-chip-x" onclick="event.stopPropagation();msToggleScript('' + prefix + '','' + id + '')">×</span>';
+      wrap.insertBefore(chip, ph);
+    });
+  }
+}
+
+function renderMsDropdown(prefix) {
+  var dd  = document.getElementById(prefix + '-ms-dropdown');
+  var sel = msSelected[prefix];
+  var ids = scripts.map(function(s) { return s.scriptId; })
+    .filter(function(v,i,a) { return a.indexOf(v)===i; }).sort();
+  dd.innerHTML = '';
+  // خيار "All Scripts"
+  var allOpt = document.createElement('div');
+  allOpt.className = 'ms-option' + (sel.length === 0 ? ' selected' : '');
+  allOpt.innerHTML = '<span class="ms-option-icon">' + (sel.length===0?'✓':'') + '</span>📡 All Scripts';
+  allOpt.onclick   = function() { msSelectAll(prefix); };
+  dd.appendChild(allOpt);
+  // خيارات السكريبتات
+  ids.forEach(function(id) {
+    var isSel = sel.indexOf(id) !== -1;
+    var sc    = scripts.find(function(s) { return s.scriptId === id; });
+    var icon  = sc && sc.status === 'alive' ? '🟢' : '⚪';
+    var opt   = document.createElement('div');
+    opt.className = 'ms-option' + (isSel ? ' selected' : '');
+    opt.innerHTML = '<span class="ms-option-icon">' + (isSel?'✓':'') + '</span>' + icon + ' ' + id;
+    opt.onclick   = function() { msToggleScript(prefix, id); };
+    dd.appendChild(opt);
+  });
+}
+
+function getMsTargets(prefix) {
+  // يُعيد مصفوفة من scriptIds أو ['all']
+  return msSelected[prefix].length === 0 ? ['all'] : msSelected[prefix];
+}
+
 function populateDropdowns() {
   var ids = scripts.map(function(s){ return s.scriptId; })
     .filter(function(v,i,arr){ return arr.indexOf(v)===i; }).sort();
 
-  ['bc-target','test-target'].forEach(function(elId){
-    var sel = document.getElementById(elId);
-    var cur = sel.value;
-    sel.innerHTML = '<option value="all">All Scripts (' + ids.length + ')</option>';
-    ids.forEach(function(id){
-      var sc   = scripts.find(function(s){ return s.scriptId===id; });
-      var icon = sc && sc.status === 'alive' ? '🟢 ' : '⚪ ';
-      var o = document.createElement('option'); o.value = id; o.textContent = icon + id; sel.appendChild(o);
-    });
-    for (var k = 0; k < sel.options.length; k++) {
-      if (sel.options[k].value === cur) { sel.value = cur; break; }
-    }
-  });
+  // تحديث multi-select dropdowns
+  renderMsDropdown('bc');
+  renderMsDropdown('test');
+  renderMsChips('bc');
+  renderMsChips('test');
   updateBcBadge();
 }
 
 function updateBcBadge() {
-  var sel   = document.getElementById('bc-target');
   var badge = document.getElementById('bc-badge');
-  if (sel.value === 'all') {
+  var sel   = msSelected['bc'];
+  if (sel.length === 0) {
     badge.textContent = scripts.length + ' scripts targeted';
     badge.className   = 'badge bb';
   } else {
-    badge.textContent = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent : '';
-    badge.className   = 'badge bm';
+    badge.textContent = sel.length + ' script' + (sel.length > 1 ? 's' : '') + ' selected';
+    badge.className   = 'badge bb';
   }
   badge.style.display = '';
 }
@@ -821,10 +931,11 @@ function saveConfig() {
 
 // ── Test ───────────────────────────────────────────────────────
 function sendTest() {
-  var target = document.getElementById('test-target').value;
-  var email  = document.getElementById('cfg-test').value.trim();
+  var targets = getMsTargets('test');
+  var target  = targets[0] === 'all' ? 'all' : targets.join(',');
+  var email   = document.getElementById('cfg-test').value.trim();
   if (!email) { toast('Enter Test Email in Campaign Config','err'); return; }
-  var lbl = target === 'all' ? 'all ' + scripts.length + ' scripts' : target;
+  var lbl = targets[0] === 'all' ? 'all ' + scripts.length + ' scripts' : targets.length + ' script(s)';
   if (!confirm('Send test to ' + email + ' on ' + lbl + '?')) return;
   var btn = document.getElementById('btn-test');
   var msg = document.getElementById('test-msg');
@@ -842,8 +953,9 @@ function sendTest() {
 
 // ── Broadcast ──────────────────────────────────────────────────
 function broadcast(type) {
-  var target = document.getElementById('bc-target').value;
-  var lbl    = target === 'all' ? 'all ' + scripts.length + ' scripts' : target;
+  var targets = getMsTargets('bc');
+  var target  = targets[0] === 'all' ? 'all' : targets.join(',');
+  var lbl     = targets[0] === 'all' ? 'all ' + scripts.length + ' scripts' : targets.length + ' script(s)';
   var labels = {start:'Start',stop:'Stop',reset:'Reset',links:'Refresh Links',template:'Update Template'};
   var msgs   = {
     start:    'Send START to '    + lbl + '?',
