@@ -158,13 +158,20 @@ td{padding:10px 16px;vertical-align:middle}
 .bd-pnd{background:var(--amber-dim);color:var(--amber)}
 .bd-no{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
 /* [Fix3] Multi-Select — إضافة CSS فقط */
-.ms-wrap{display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-height:34px;max-height:34px;overflow:hidden;padding:4px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;width:200px;flex-shrink:0}
-.ms-chip{display:inline-flex;align-items:center;gap:2px;background:var(--blue-dim);color:var(--blue);border:1px solid #93c5fd;padding:1px 6px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap}
-.ms-chip-x{cursor:pointer;font-size:12px;opacity:.6;margin-left:2px}
-.ms-chip-x:hover{opacity:1}
-.ms-ph{font-size:12px;color:var(--muted);font-family:var(--mono)}
-.ms-dd{position:fixed;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:9999;min-width:200px;max-height:220px;overflow-y:auto;display:none}
-.ms-opt{padding:8px 14px;font-size:13px;font-family:var(--mono);cursor:pointer;display:flex;align-items:center;gap:8px}
+/* زر فتح القائمة — ثابت الحجم */
+.ms-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-family:var(--mono);font-weight:600;color:var(--text2);white-space:nowrap;flex-shrink:0;height:34px}
+.ms-btn:hover{border-color:var(--blue);color:var(--blue)}
+.ms-btn-arrow{font-size:9px;color:var(--muted)}
+/* مستطيل عرض الاختيارات — يتمدد */
+.ms-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:5px 10px;border:1px solid var(--border);border-radius:8px;background:var(--card);min-height:34px;flex:1;min-width:0}
+.ms-ph{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.ms-chip{display:inline-flex;align-items:center;gap:2px;background:var(--blue-dim);color:var(--blue);border:1px solid #93c5fd;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+.ms-chip-x{cursor:pointer;font-size:11px;opacity:.6;margin-left:1px;line-height:1}
+.ms-chip-x:hover{opacity:1;color:var(--red)}
+/* القائمة المنسدلة — في مكانها */
+.ms-dd{position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:9999;min-width:180px;max-height:220px;overflow-y:auto;display:none}
+.ms-container{position:relative;display:inline-block}
+.ms-opt{padding:7px 14px;font-size:12px;font-family:var(--mono);cursor:pointer;display:flex;align-items:center;gap:8px}
 .ms-opt:hover{background:var(--bg)}.ms-opt.sel{background:var(--blue-dim);color:var(--blue);font-weight:600}
 .ms-ck{width:14px;font-size:11px}
 @media(max-width:640px){
@@ -247,19 +254,29 @@ td{padding:10px 16px;vertical-align:middle}
       <span class="cfg-msg" id="cfg-msg"></span>
     </div>
     <!-- Test Control -->
-    <div class="test-wrap">
-      <div>
+    <div class="test-wrap" style="flex-wrap:wrap;gap:8px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;gap:5px;flex:1;min-width:0">
         <span class="test-lbl">TARGET SCRIPT</span>
-        <div class="ms-wrap" id="test-ms" onclick="toggleMs('test',event)">
-          <span class="ms-ph" id="test-ms-ph">All Scripts</span>
-          <div class="ms-dd" id="test-ms-dd"></div>
+        <div style="display:flex;gap:6px;align-items:flex-start;">
+          <!-- زر القائمة -->
+          <div class="ms-container">
+            <div class="ms-btn" id="test-ms-btn" onclick="toggleMs('test',event)">
+              <span>&#128225;</span>
+              <span id="test-ms-count">All</span>
+              <span class="ms-btn-arrow">&#9660;</span>
+            </div>
+            <div class="ms-dd" id="test-ms-dd"></div>
+          </div>
+          <!-- مستطيل العرض -->
+          <div class="ms-tags" id="test-ms-tags">
+            <span class="ms-ph" id="test-ms-ph">All Scripts</span>
+          </div>
         </div>
       </div>
-      <div style="flex-shrink:0">
-        <span class="test-lbl">&nbsp;</span>
+      <div style="flex-shrink:0;align-self:flex-end">
         <button class="btn-test" id="btn-test" onclick="sendTest()" style="white-space:nowrap">&#128231; Send Test Email</button>
       </div>
-      <span class="cfg-msg" id="test-msg"></span>
+      <span class="cfg-msg" id="test-msg" style="width:100%"></span>
     </div>
   </div>
 
@@ -269,14 +286,23 @@ td{padding:10px 16px;vertical-align:middle}
       <div class="sec-title">&#127918; Broadcast Control</div>
       <span id="bc-badge" class="badge bm" style="display:none"></span>
     </div>
-    <!-- صف الاختيار -->
-    <div style="padding:10px 16px 0;display:flex;align-items:center;gap:8px;">
-      <span style="font-size:11px;font-weight:600;color:var(--text2);">TARGET</span>
-      <div class="ms-wrap" id="bc-ms" onclick="toggleMs('bc',event)">
-        <span class="ms-ph" id="bc-ms-ph">All Scripts</span>
+    <!-- صف الاختيار + عرض -->
+    <div style="padding:10px 16px 4px;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
+      <span style="font-size:11px;font-weight:600;color:var(--text2);margin-top:8px;flex-shrink:0">TARGET</span>
+      <!-- زر القائمة -->
+      <div class="ms-container">
+        <div class="ms-btn" id="bc-ms-btn" onclick="toggleMs('bc',event)">
+          <span>&#128225;</span>
+          <span id="bc-ms-count">All</span>
+          <span class="ms-btn-arrow">&#9660;</span>
+        </div>
         <div class="ms-dd" id="bc-ms-dd"></div>
       </div>
-      <span class="bc-status cfg-msg" id="bc-status"></span>
+      <!-- مستطيل العرض -->
+      <div class="ms-tags" id="bc-ms-tags">
+        <span class="ms-ph" id="bc-ms-ph">All Scripts</span>
+      </div>
+      <span class="bc-status cfg-msg" id="bc-status" style="align-self:center"></span>
     </div>
     <!-- صف الأزرار ثابت دائماً -->
     <div class="bc-wrap">
@@ -392,7 +418,7 @@ window.onload = function() {
   });
   // إغلاق ms-dd عند الضغط خارجه
   document.addEventListener('click', function(e){
-    if (!e.target.closest('.ms-wrap') && !e.target.closest('.ms-dd')) {
+    if (!e.target.closest('.ms-container') && !e.target.closest('.ms-dd')) {
       document.querySelectorAll('.ms-dd').forEach(function(d){ d.style.display='none'; });
     }
   });
@@ -673,17 +699,9 @@ function updateFilter() {
 // ── [Fix3] Multi-Select Functions ─────────────────────────────
 function toggleMs(prefix, e) {
   e.stopPropagation();
-  var dd   = document.getElementById(prefix + '-ms-dd');
-  var wrap = document.getElementById(prefix === 'test' ? 'test-ms' : 'bc-ms');
-  // إغلاق كل القوائم الأخرى
+  var dd = document.getElementById(prefix + '-ms-dd');
   document.querySelectorAll('.ms-dd').forEach(function(d){ if (d !== dd) d.style.display = 'none'; });
-  if (dd.style.display === 'block') { dd.style.display = 'none'; return; }
-  // حساب الموضع
-  var rect = wrap.getBoundingClientRect();
-  dd.style.top      = (rect.bottom + window.scrollY + 4) + 'px';
-  dd.style.left     = (rect.left + window.scrollX) + 'px';
-  dd.style.minWidth = rect.width + 'px';
-  dd.style.display  = 'block';
+  dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
 }
 
 function msToggle(prefix, id) {
@@ -703,27 +721,32 @@ function msSelectAll(prefix) {
 }
 
 function renderMsChips(prefix) {
-  var wrap = document.getElementById(prefix === 'test' ? 'test-ms' : 'bc-ms');
+  // تحديث زر القائمة
+  var countEl = document.getElementById(prefix + '-ms-count');
+  var sel     = msSel[prefix];
+  if (countEl) countEl.textContent = sel.length === 0 ? 'All' : sel.length + ' selected';
+
+  // تحديث مستطيل العرض
+  var tags = document.getElementById(prefix + '-ms-tags');
   var ph   = document.getElementById(prefix + '-ms-ph');
-  var sel  = msSel[prefix];
-  wrap.querySelectorAll('.ms-chip').forEach(function(c){ c.remove(); });
+  if (!tags) return;
+  tags.querySelectorAll('.ms-chip').forEach(function(c){ c.remove(); });
   if (sel.length === 0) {
     ph.style.display = '';
     ph.textContent   = 'All Scripts (' + scripts.length + ')';
   } else {
     ph.style.display = 'none';
-    var dd = document.getElementById(prefix + '-ms-dd');
     sel.forEach(function(id) {
       var chip = document.createElement('span');
       chip.className = 'ms-chip';
       var sc   = scripts.find(function(s){ return s.scriptId === id; });
-      var icon = sc && sc.status === 'alive' ? '🟢 ' : '⚪ ';
-      chip.textContent = icon + id;
+      var icon = sc && sc.status === 'alive' ? '🟢' : '⚪';
+      chip.textContent = icon + ' ' + id;
       var x = document.createElement('span');
       x.className = 'ms-chip-x'; x.textContent = '×';
       x.onclick = function(e){ e.stopPropagation(); msToggle(prefix, id); };
       chip.appendChild(x);
-      wrap.insertBefore(chip, dd);
+      tags.appendChild(chip);
     });
   }
 }
