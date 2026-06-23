@@ -254,29 +254,25 @@ td{padding:10px 16px;vertical-align:middle}
       <span class="cfg-msg" id="cfg-msg"></span>
     </div>
     <!-- Test Control -->
-    <div class="test-wrap" style="flex-wrap:wrap;gap:8px;align-items:flex-start;">
-      <div style="display:flex;flex-direction:column;gap:5px;flex:1;min-width:0">
-        <span class="test-lbl">TARGET SCRIPT</span>
-        <div style="display:flex;gap:6px;align-items:flex-start;">
-          <!-- زر القائمة -->
-          <div class="ms-container">
-            <div class="ms-btn" id="test-ms-btn" onclick="toggleMs('test',event)">
-              <span>&#128225;</span>
-              <span id="test-ms-count">All</span>
-              <span class="ms-btn-arrow">&#9660;</span>
-            </div>
-            <div class="ms-dd" id="test-ms-dd"></div>
+    <div class="test-wrap" style="flex-direction:column;align-items:stretch;gap:10px;">
+      <span class="test-lbl">TARGET SCRIPT</span>
+      <!-- صف: زر قائمة + مستطيل عرض -->
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <div class="ms-container" style="flex-shrink:0;">
+          <div class="ms-btn" id="test-ms-btn" onclick="toggleMs('test',event)">
+            &#128225; <span id="test-ms-count">All</span> <span class="ms-btn-arrow">&#9660;</span>
           </div>
-          <!-- مستطيل العرض -->
-          <div class="ms-tags" id="test-ms-tags">
-            <span class="ms-ph" id="test-ms-ph">All Scripts</span>
-          </div>
+          <div class="ms-dd" id="test-ms-dd"></div>
+        </div>
+        <div class="ms-tags" id="test-ms-tags" style="flex:1;min-width:0;">
+          <span class="ms-ph" id="test-ms-ph">All Scripts</span>
         </div>
       </div>
-      <div style="flex-shrink:0;align-self:flex-end">
-        <button class="btn-test" id="btn-test" onclick="sendTest()" style="white-space:nowrap">&#128231; Send Test Email</button>
+      <!-- زر الإرسال تحت المستطيل -->
+      <div>
+        <button class="btn-test" id="btn-test" onclick="sendTest()">&#128231; Send Test Email</button>
+        <span class="cfg-msg" id="test-msg" style="margin-left:10px;"></span>
       </div>
-      <span class="cfg-msg" id="test-msg" style="width:100%"></span>
     </div>
   </div>
 
@@ -287,22 +283,18 @@ td{padding:10px 16px;vertical-align:middle}
       <span id="bc-badge" class="badge bm" style="display:none"></span>
     </div>
     <!-- صف الاختيار + عرض -->
-    <div style="padding:10px 16px 4px;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
-      <span style="font-size:11px;font-weight:600;color:var(--text2);margin-top:8px;flex-shrink:0">TARGET</span>
-      <!-- زر القائمة -->
-      <div class="ms-container">
+    <div style="padding:10px 16px 4px;display:flex;align-items:flex-start;gap:8px;">
+      <span style="font-size:11px;font-weight:600;color:var(--text2);margin-top:9px;flex-shrink:0;">TARGET</span>
+      <div class="ms-container" style="flex-shrink:0;">
         <div class="ms-btn" id="bc-ms-btn" onclick="toggleMs('bc',event)">
-          <span>&#128225;</span>
-          <span id="bc-ms-count">All</span>
-          <span class="ms-btn-arrow">&#9660;</span>
+          &#128225; <span id="bc-ms-count">All</span> <span class="ms-btn-arrow">&#9660;</span>
         </div>
         <div class="ms-dd" id="bc-ms-dd"></div>
       </div>
-      <!-- مستطيل العرض -->
-      <div class="ms-tags" id="bc-ms-tags">
+      <div class="ms-tags" id="bc-ms-tags" style="flex:1;min-width:0;max-width:600px;">
         <span class="ms-ph" id="bc-ms-ph">All Scripts</span>
       </div>
-      <span class="bc-status cfg-msg" id="bc-status" style="align-self:center"></span>
+      <span class="bc-status cfg-msg" id="bc-status" style="align-self:center;flex-shrink:0;"></span>
     </div>
     <!-- صف الأزرار ثابت دائماً -->
     <div class="bc-wrap">
@@ -753,22 +745,42 @@ function renderMsChips(prefix) {
 
 function renderMsDd(prefix) {
   var dd  = document.getElementById(prefix + '-ms-dd');
+  if (!dd) return;
   var sel = msSel[prefix];
-  var ids = scripts.map(function(s){ return s.scriptId; })
-    .filter(function(v,i,a){ return a.indexOf(v) === i; }).sort();
+  // جمع كل IDs من scripts + من msSel (للسكريبتات المختارة مسبقاً)
+  var allIds = (scripts || []).map(function(s){ return s.scriptId; });
+  sel.forEach(function(id){ if (allIds.indexOf(id) === -1) allIds.push(id); });
+  allIds = allIds.filter(function(v,i,a){ return a.indexOf(v) === i; }).sort();
+
   dd.innerHTML = '';
+
+  // خيار "All Scripts"
   var ao = document.createElement('div');
   ao.className = 'ms-opt' + (sel.length === 0 ? ' sel' : '');
-  ao.innerHTML = '<span class="ms-ck">' + (sel.length === 0 ? '✓' : '') + '</span>All Scripts';
-  ao.onclick   = function(e){ e.stopPropagation(); msSelectAll(prefix); };
+  ao.innerHTML = '<span class="ms-ck">' + (sel.length === 0 ? '✓' : '') + '</span>&#128225; All Scripts';
+  ao.onclick = function(e){ e.stopPropagation(); msSelectAll(prefix); };
   dd.appendChild(ao);
-  ids.forEach(function(id) {
+
+  // خط فاصل
+  var sep = document.createElement('div');
+  sep.style.cssText = 'height:1px;background:var(--border);margin:4px 0;';
+  dd.appendChild(sep);
+
+  if (!allIds.length) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'padding:8px 14px;font-size:12px;color:var(--muted);font-family:var(--mono);';
+    empty.textContent = 'No scripts yet';
+    dd.appendChild(empty);
+    return;
+  }
+
+  allIds.forEach(function(id) {
     var isSel = sel.indexOf(id) !== -1;
-    var sc    = scripts.find(function(s){ return s.scriptId === id; });
-    var icon  = sc && sc.status === 'alive' ? '🟢 ' : '⚪ ';
+    var sc    = (scripts || []).find(function(s){ return s.scriptId === id; });
+    var icon  = sc && sc.status === 'alive' ? '🟢' : '⚪';
     var opt   = document.createElement('div');
     opt.className = 'ms-opt' + (isSel ? ' sel' : '');
-    opt.innerHTML = '<span class="ms-ck">' + (isSel ? '✓' : '') + '</span>' + icon + id;
+    opt.innerHTML = '<span class="ms-ck">' + (isSel ? '✓' : '') + '</span>' + icon + ' ' + id;
     opt.onclick   = function(e){ e.stopPropagation(); msToggle(prefix, id); };
     dd.appendChild(opt);
   });
