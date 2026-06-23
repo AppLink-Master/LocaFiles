@@ -414,7 +414,9 @@ window.onload = function() {
       document.querySelectorAll('.ms-dd').forEach(function(d){ d.style.display='none'; });
     }
   });
-  document.addEventListener('scroll', function(){
+  document.addEventListener('scroll', function(e){
+    // لا تغلق إذا كان الـ scroll داخل القائمة نفسها
+    if (e.target && e.target.classList && e.target.classList.contains('ms-dd')) return;
     document.querySelectorAll('.ms-dd').forEach(function(d){ d.style.display='none'; });
   }, true);
 };
