@@ -768,6 +768,12 @@ function renderMsDd(prefix) {
 
   dd.innerHTML = '';
 
+  // "Select Script" — placeholder في رأس القائمة (غير قابل للضغط)
+  var ph = document.createElement('div');
+  ph.style.cssText = 'padding:6px 14px;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600;font-family:var(--mono);border-bottom:1px solid var(--border);margin-bottom:4px;';
+  ph.textContent = 'SELECT SCRIPT';
+  dd.appendChild(ph);
+
   // خيار "All Scripts"
   var ao = document.createElement('div');
   ao.className = 'ms-opt' + (sel.length === 0 ? ' sel' : '');
