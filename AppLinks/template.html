@@ -1,115 +1,87 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kampagne</title>
+    <title>Sondaggio Box Refrigerato Per Auto</title>
     <style>
-     
-        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
-        
-        body {
-            height: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            background-color: #f4f4f4;
-        }
-
-        table { border-collapse: collapse !important; }
-        
-        .container {
-            width: 100%;
-            max-width: 600px !important;
-        }
-
-        @media screen and (max-width: 600px) {
-            .container {
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Verdana, Arial, sans-serif; background: #f4f1ee; padding: 20px; }
+        .wrap { max-width: 500px; margin: 0 auto; background: #fff; border: 1px solid #ddd; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 2px solid #005C9E; }
+        .topbar img { width: 80px; }
+        .topbar-tag { font-size: 10px; font-weight: bold; color: #005C9E; text-transform: uppercase; letter-spacing: 0.7px; }
+        .header-band { background: #005C9E; padding: 28px 28px 26px; }
+        .band-eyebrow { font-size: 10px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; }
+        .band-headline { font-size: 26px; font-weight: bold; color: #fff; line-height: 1.2; margin-bottom: 10px; }
+        .band-sub { font-size: 12px; color: rgba(255, 255, 255, 0.8); line-height: 1.5; }
+        .band-pill { display: inline-block; margin-top: 14px; background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.35); color: #fff; font-size: 11px; font-weight: bold; padding: 6px 14px; border-radius: 20px; letter-spacing: 0.3px; }
+        .body-split { display: grid; grid-template-columns: 58% 42%; border-bottom: 1px solid #ebebeb; }
+        .body-left { padding: 24px 18px 24px 24px; border-right: 1px solid #ebebeb; }
+        .body-right { background: #faf8ff; padding: 24px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+        .greeting { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .para { font-size: 11px; line-height: 1.7; color: #555; margin-bottom: 10px; }
+        .para b { color: #222; }
+        .product-circle { width: 150px; height: 150px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .product-circle img { width: 80%; height: auto; }
+        .product-name { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #005C9E; text-align: center; }
+        .product-discount { font-size: 22px; font-weight: bold; color: #005C9E; line-height: 1; text-align: center; }
+        .product-discount-lbl { font-size: 10px; color: #888; text-align: center; margin-top: 2px; }
+        .cta-row { padding: 20px 24px 16px; }
+        .cta { display: block; background: #005C9E; color: #fff; text-decoration: none; text-align: center; padding: 16px; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-radius: 3px; }
+        .footer { background: #f5f5f5; padding: 18px 24px; border-top: 1px solid #e5e5e5; }
+        .footer-links a { font-size: 10px; font-weight: bold; color: #777; text-decoration: none; margin-right: 14px; }
+        .footer-fine { font-size: 10px; color: #888; line-height: 1.4; margin-bottom: 7px; }
+        .footer-copy { font-size: 10px; font-weight: bold; color: #444; margin-bottom: 7px; }
+        .footer-unsub { font-size: 10px; }
+        .footer-unsub a { color: #46474a; text-decoration: underline; }
+        @media (max-width: 440px) { .body-split { grid-template-columns: 1fr; } .body-left { border-right: none; border-bottom: 1px solid #ebebeb; } }
     </style>
 </head>
-<body style="margin: 0 !important; padding: 0 !important; background-color: #f4f4f4;">
-
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
-        <tr>
-            <td align="center" style="background-color: #f4f4f4;" bgcolor="#f4f4f4">
-                
-                <table class="container" border="0" cellpadding="0" cellspacing="0" width="600" style="max-width: 600px; background-color: #ffffff;">
-                    
-                    <tr>
-                        <td align="center" valign="top" style="font-size: 0; line-height: 0;">
-                            <a href="{{CLICK_LINK}}" target="_blank" style="text-decoration: none;">
-                                <img src="{{IMG2_LINK}}" alt="Angebot anzeigen" width="600" style="display: block; width: 100%; max-width: 600px; border: 0;" border="0">
-                            </a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td align="center" bgcolor="#f9f9f9" style="padding: 30px 20px; font-family: Arial, sans-serif; font-size: 12px; color: #888888;">
-                            
-                            <p style="margin: 0 0 10px 0;">Wenn diese E-Mail nicht korrekt angezeigt wird, <a href="{{CLICK_LINK}}" style="color: #007bff; text-decoration: underline;">klicken Sie bitte hier</a>.</p>
-                            
-                            
-                            <p style="margin: 0 0 10px 0;">Gesendet an: <strong>{{EMAIL}}</strong></p>
-         
-                            <p style="margin: 0 0 10px 0;">
-                                Um diese E-Mails nicht mehr zu erhalten, können Sie sich <a href="{{UNSUB_LINK}}" style="color: #007bff; text-decoration: underline;">hier abmelden</a>.
-                            </p>
-                
-                            <p style="margin: 0;">&copy; 2026 Alle Rechte vorbehalten.</p>
-							
-                        </td>
-                    </tr>
-                </table>
-
-                </td>
-        </tr>
-    </table>
+<body>
+    <div class="wrap">
+        <div class="topbar">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Telepass_%28azienda%29_logo_2021.svg/1280px-Telepass_%28azienda%29_logo_2021.svg.png" alt="Telepass Logo">
+            <span class="topbar-tag">TELEPASS ESCLUSIVO</span>
+        </div>
+        <div class="header-band">
+            <div class="band-eyebrow">Sono già state emesse più di €4.000.000 in offerte!</div>
+            <div class="band-headline">Ricevi un Box Refrigerato Per Auto</div>
+            <div class="band-sub">Compila il nostro breve sondaggio sulla tua esperienza con Telepass e richiedi oggi stesso il tuo regalo.</div>
+            <span class="band-pill">Offerta Limitata</span>
+        </div>
+        <div class="body-split">
+            <div class="body-left">
+                <p class="greeting">Gentile cliente Telepass {EMAIL},</p>
+                <p class="para">Vorremmo offrirti l'opportunità unica di ricevere un brand-new <b>Box Refrigerato Per Auto</b>!</p>
+                <p class="para">Per richiederlo, basta compilare questo breve sondaggio di gradimento sulle tue preferenze ed esperienze con Telepass.</p>
+            </div>
+            <div class="body-right">
+                <div class="product-circle">
+                    <img src="https://i.8upload.com/image/40304e880ab78874/product-13.png" alt="Box Refrigerato Per Auto">
+                </div>
+                <div>
+                    <div class="product-discount">100%</div>
+                    <div class="product-discount-lbl">di sconto sul tuo Box Refrigerato</div>
+                </div>
+                <div class="product-name">Box Refrigerato Per Auto</div>
+            </div>
+        </div>
+        <div class="cta-row">
+            <a href="https://www.autocustompack.com/4GTN7Q1/2B9GTZHF/?creative_id=61606" class="cta">INIZIA IL SONDAGGIO</a>
+        </div>
+        <div class="footer">
+            <div class="footer-links">
+                <a href="https://www.autocustompack.com/4GTN7Q1/2B9GTZHF/?creative_id=61606">Politica sulla Privacy</a>
+                <a href="https://www.autocustompack.com/4GTN7Q1/2B9GTZHF/?creative_id=61606">Termini e Condizioni</a>
+                <a href="https://www.autocustompack.com/4GTN7Q1/2B9GTZHF/?creative_id=61606">Centro Assistenza</a>
+            </div>
+            <p class="footer-fine">La partecipazione a questo sondaggio è volontaria e non garantisce alcun premio. Offerta valida fino a esaurimento scorte.</p>
+            <div class="footer-copy">&copy; 2026 Telepass S.p.A. Tutti i diritti riservati.</div>
+            <p class="footer-unsub">
+                <a href="https://www.perfdevhostfenc.com/o-ngjc-p75-d8f9251166c54986318fd9f831824d6a">Disiscriviti qui</a> &nbsp;&bull;&nbsp; <a href="https://www.autocustompack.com/4GTN7Q1/2B9GTZHF/?creative_id=61606">Gestisci Preferenze</a>
+            </p>
+        </div>
+    </div>
 </body>
 </html>
-
-
-
-
-   <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
-
-   <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
-
-   <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
-
-   <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
-
