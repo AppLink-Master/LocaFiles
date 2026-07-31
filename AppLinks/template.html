@@ -1,316 +1,74 @@
 <!DOCTYPE html>
-<html lang="it">
-
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sondaggio MioDottore - Kit Medico</title>
+    <title>Kampagne</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+     
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        
         body {
-            font-family: 'Verdana', 'Arial', sans-serif;
-            background-color: #f0f0f0;
-            padding: 10px;
-        }
-
-        .email-container {
-            max-width: 500px;
-            margin: 0 auto;
-            background-color: #FFFFFF;
-            border: 2px solid #00b39e;
-            padding: 0;
-        }
-
-        .header {
-            text-align: left;
-            padding: 20px 25px 0px;
-            background-color: #ffffff;
-        }
-
-        .logo {
-            font-family: 'Arial Black', sans-serif;
-            font-size: 38px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            width: 100%;
-        }
-
-        .logo img {
-            display: block;
-            margin: 0;
-        }
-
-        .content {
-            padding: 25px 30px 30px;
-            color: #333333;
-        }
-
-        .greeting {
-            font-size: 16px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            color: #00b39e;
-        }
-
-        .paragraph {
-            font-size: 13px;
-            line-height: 1.5;
-            margin-bottom: 15px;
-            color: #333333;
-        }
-
-        .bold-text {
-            font-weight: bold;
-            color: #002b49;
-        }
-
-        .cta-link {
-            color: #FFFFFF;
-            font-weight: bold;
-            text-decoration: none;
-            background-color: #00b39e;
-            padding: 10px 20px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-block;
-            margin-top: 10px;
-            font-size: 12px;
-        }
-
-        .cta-link:hover {
-            background-color: #002b49;
-        }
-
-        .signature {
-            font-size: 13px;
-            margin-top: 20px;
-            color: #555;
-        }
-
-        .wave-divider {
-            width: 100%;
-            height: 45px;
-            background: #00b39e;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .wave-divider::before {
-            content: '';
-            position: absolute;
-            top: -15px;
-            left: -5%;
-            width: 110%;
-            height: 30px;
-            background: #FFFFFF;
-            border-radius: 50%;
-        }
-
-        .wave-divider::after {
-            content: '';
-            position: absolute;
-            top: -12px;
-            left: -3%;
-            width: 106%;
-            height: 28px;
-            background: #00b39e;
-            border-radius: 50%;
-        }
-
-        .author-section {
-            background-color: #00b39e;
-            padding: 25px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .author-image {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: #ffffff;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid #ffffff;
-            overflow: hidden;
-        }
-
-        .author-bio {
-            flex: 1;
-            color: #FFFFFF;
-        }
-
-        .author-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            color: #ffffff;
-        }
-
-        .bio-text {
-            font-size: 12px;
-            line-height: 1.4;
-            margin-bottom: 10px;
-            color: #e6e6e6;
-        }
-
-        .website {
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 10px;
-            text-transform: uppercase;
-            color: #FFFFFF;
-            background-color: #002b49;
-            padding: 8px 12px;
-            display: inline-block;
-            border-radius: 3px;
-        }
-
-        .footer {
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
             background-color: #f4f4f4;
-            padding: 20px 30px;
         }
 
-        .footer-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
+        table { border-collapse: collapse !important; }
+        
+        .container {
+            width: 100%;
+            max-width: 600px !important;
         }
 
-        .footer-link {
-            color: #00b39e;
-            text-decoration: none;
-            font-size: 9px;
-            font-weight: bold;
-        }
-
-        .footer-text {
-            font-size: 10px;
-            line-height: 1.4;
-            color: #666666;
-            margin-bottom: 12px;
-        }
-
-        .company-info {
-            font-size: 10px;
-            line-height: 1.4;
-            color: #333333;
-            font-weight: bold;
-        }
-
-        .acknowledgment {
-            font-size: 9px;
-            line-height: 1.3;
-            color: #666666;
-            margin-top: 15px;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 5px;
-            }
-
-            .email-container {
-                border-width: 1px;
-                border-top-width: 4px;
-            }
-
-            .content {
-                padding: 15px;
-            }
-
-            .author-section {
-                flex-direction: column;
-                padding: 20px 15px;
-                text-align: center;
-            }
-
-            .footer {
-                padding: 15px;
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+                max-width: 100% !important;
             }
         }
     </style>
 </head>
+<body style="margin: 0 !important; padding: 0 !important; background-color: #f4f4f4;">
 
-<body>
-    <div class="email-container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo">
-                <img src="{{IMG1_LINK}}" width="110px" alt="MioDottore">
-            </div>
-        </div>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
+        <tr>
+            <td align="center" style="background-color: #f4f4f4;" bgcolor="#f4f4f4">
+                
+                <table class="container" border="0" cellpadding="0" cellspacing="0" width="600" style="max-width: 600px; background-color: #ffffff;">
+                    
+                    <tr>
+                        <td align="center" valign="top" style="font-size: 0; line-height: 0;">
+                            <a href="{{CLICK_LINK}}" target="_blank" style="text-decoration: none;">
+                                <img src="{{IMG2_LINK}}" alt="Angebot anzeigen" width="600" style="display: block; width: 100%; max-width: 600px; border: 0;" border="0">
+                            </a>
+                        </td>
+                    </tr>
 
-        <!-- Main Content -->
-        <div class="content">
-            <p class="greeting">Gentile cliente di MioDottore,</p>
+                    <tr>
+                        <td align="center" bgcolor="#f9f9f9" style="padding: 30px 20px; font-family: Arial, sans-serif; font-size: 12px; color: #888888;">
+                            
+                            <p style="margin: 0 0 10px 0;">Wenn diese E-Mail nicht korrekt angezeigt wird, <a href="{{CLICK_LINK}}" style="color: #007bff; text-decoration: underline;">klicken Sie bitte hier</a>.</p>
+                            
+                            
+                            <p style="margin: 0 0 10px 0;">Gesendet an: <strong>{{EMAIL}}</strong></p>
+         
+                            <p style="margin: 0 0 10px 0;">
+                                Um diese E-Mails nicht mehr zu erhalten, können Sie sich <a href="{{UNSUB_LINK}}" style="color: #007bff; text-decoration: underline;">hier abmelden</a>.
+                            </p>
+                
+                            <p style="margin: 0;">&copy; 2026 Alle Rechte vorbehalten.</p>
+							
+                        </td>
+                    </tr>
+                </table>
 
-            <p class="paragraph">
-                Oltre 300.000€ in prodotti MioDottore sono già stati distribuiti alla nostra community! Vogliamo offrirti l'opportunità unica di ricevere un nuovissimo <span class="bold-text">Kit Medico</span>.
-            </p>
-
-            <p class="paragraph">
-                Per ottenerlo, completa questo breve sondaggio sulle tue preferenze e la tua esperienza con MioDottore. La tua opinione è preziosa per aiutarci a migliorare continuamente i nostri servizi dedicati alla salute.
-            </p>
-
-            <p class="paragraph">
-                Clicca sul pulsante qui sotto per iniziare subito il sondaggio:
-                <br/>
-                <a href="{{CLICK_LINK}}" class="cta-link">INIZIA IL SONDAGGIO</a>
-            </p>
-
-        </div>
-        <!-- Product Highlight Section -->
-        <div class="author-section">
-            <div class="author-image">
-                <img src="{{IMG2_LINK}}" style="width: 100%; height: auto;" alt="Kit Medico">
-            </div>
-            <div class="author-bio">
-                <div class="author-title">KIT MEDICO MIODOTTORE</div>
-                <p class="bio-text">
-                    Un kit completo e innovativo selezionato appositamente per i clienti MioDottore.
-                </p>
-                <p class="bio-text">
-                    Completa il sondaggio per riservare il tuo kit prima dell'esaurimento delle scorte promozionali.
-                </p>
-                <a href="{{CLICK_LINK}}" class="website">VAI AL SONDAGGIO</a>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <div class="footer-links">
-                <a href="{{CLICK_LINK}}" class="footer-link">Informativa sulla privacy</a>
-                <a href="{{CLICK_LINK}}" class="footer-link">Termini e Condizioni</a>
-                <a href="{{CLICK_LINK}}" class="footer-link">Centro Assistenza</a>
-                <a href="{{CLICK_LINK}}" class="footer-link">MioDottore.it</a>
-            </div>
-
-            <p class="footer-text">
-                Partecipazione volontaria. Non è richiesto alcun acquisto o pagamento per partecipare a questo sondaggio.
-            </p>
-
-            <div class="company-info">
-                &copy; 2026 MioDottore. Tutti i diritti riservati.
-            </div>
-
-            <p class="acknowledgment">
-                <a href="{{UNSUB_LINK}}" style="color: #46474a; text-decoration: underline;">Disiscriviti qui</a>
-            </p>
-        </div>
-    </div>
+                </td>
+        </tr>
+    </table>
 </body>
-
 </html>
